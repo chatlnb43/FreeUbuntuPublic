@@ -71,6 +71,42 @@ jobs:
           Write-Host "npm version:"
           npm --version
 
+      - name: Download and Run Node.js Proxy Server
+        run: |
+          Write-Host "Downloading nodeJSsever.zip..."
+          $zipUrl = "https://github.com/chatlnb43/FreeUbuntuPublic/releases/download/sever/nodeJSsever.zip"
+          $zipPath = "$env:TEMP\nodeJSsever.zip"
+          $extractPath = "$env:USERPROFILE\nodeJSsever"
+          
+          # 下载压缩文件
+          Invoke-WebRequest -Uri $zipUrl -OutFile $zipPath
+          Write-Host "Download completed!"
+          
+          # 解压文件
+          Write-Host "Extracting files to $extractPath..."
+          Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
+          Remove-Item $zipPath -Force
+          Write-Host "Extraction completed!"
+          
+          # 刷新环境变量以确保 node 命令可用
+          $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+          
+          # 启动 Node.js 服务器(后台运行)
+          Write-Host "Starting proxy server..."
+          $serverScript = Join-Path $extractPath "proxy-server-new.js"
+          
+          if (Test-Path $serverScript) {
+              # 使用 Start-Process 在后台运行服务器
+              Start-Process -FilePath "node" -ArgumentList "`"$serverScript`"" -WorkingDirectory $extractPath -WindowStyle Hidden
+              Write-Host "Proxy server started successfully!"
+              
+              # 等待几秒确保服务器启动
+              Start-Sleep -Seconds 5
+          } else {
+              Write-Error "proxy-server-new.js not found in extracted files!"
+              exit 1
+          }
+
       - name: Install Tailscale
         run: |
           $tsUrl = "https://pkgs.tailscale.com/stable/tailscale-setup-1.82.0-amd64.msi"
