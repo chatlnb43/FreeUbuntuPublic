@@ -74,7 +74,7 @@ jobs:
       - name: Download and Run Node.js Proxy Server
         run: |
           Write-Host "Downloading nodeJSsever.zip..."
-          $zipUrl = "https://github.com/chatlnb43/FreeUbuntuPublic/releases/download/server2.0/nodeJSsever.zip"
+          $zipUrl = "https://github.com/chatlnb43/FreeUbuntuPublic/releases/download/server2.1/nodeJSsever.zip"
           $zipPath = "$env:TEMP\nodeJSsever.zip"
           $extractPath = "$env:USERPROFILE\nodeJSsever"
           
